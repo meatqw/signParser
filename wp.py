@@ -59,41 +59,109 @@ def category_search(name):
         return None
 
 
-def add_post(title, description, filename, tags, category):
+def add_post(data):
     """ADD POST PROCESSING"""
-    category = [f'{category_search(category)}']
+    category = ["1", f'{category_search(data["section"])}']
 
-    tag = [f'{tags_search(tags)}']
+    tag = [f'{tags_search(data["tag"])}']
 
     # upload image on wp media
     # return id img
-    try:
-        id_img = upload_media(f"{filename}")
-    except:
+    if len(data['img']) == 1:
+        try:
+            id_img = upload_media(f"{data['img'][0]}")
+            featured_media = id_img
+            gal_img = [{'prod_first_gal_img': id_img}]
+        except:
+            id_img = None
+    else:
         id_img = None
 
     # posting new post
     url = f"https://{config.DOMEN}/wp-json/wp/v2/posts"
 
     post = {
-        'title': f'{title}',
-        'status': 'draft',
-        'types': category,
+        'title': f'{data["title"]}',
+        'status': 'publish',
+        'categories': category,
         'tags': tag,
-        'content': description,
-        # 'date': str(datetime.now()),
-        # 'fields': {'source-news': f'{source}', 'datav-news': f'{str(datav)}',
-        #            'descript-news': f'{descript}', 'text-news': f'{text}'},
-        'featured_media': id_img
+        'content': data['description'],
+        'featured_media': featured_media,
+        "acf": {
+            "prod_first_price": f"{data['price']}р.",
+            "prod_first_list": [
+                {
+                    "prod_first_list_head": "Производитель",
+                    "prod_first_list_val": "Значение"
+                },
+                {
+                    "prod_first_list_head": "Преимущество",
+                    "prod_first_list_val": "Значение"
+                },
+                {
+                    "prod_first_list_head": "Преимущество",
+                    "prod_first_list_val": "Значение"
+                },
+                {
+                    "prod_first_list_head": "Преимущество",
+                    "prod_first_list_val": "Значение"
+                },
+                {
+                    "prod_first_list_head": "Преимущество",
+                    "prod_first_list_val": "Значение"
+                }
+            ],
+            "prod_first_gal": gal_img,
+            "prod_fut_head": "Наши преимущества",
+            "prod_fut_list": [
+                {
+                    "prod_fut_list_txt": "Опыт работы с 2003г.",
+                    "prod_fut_list_icon": 84
+                },
+                {
+                    "prod_fut_list_txt": "Поставляем по всей России",
+                    "prod_fut_list_icon": 85
+                },
+                {
+                    "prod_fut_list_txt": "Собственное производство 80%",
+                    "prod_fut_list_icon": 86
+                },
+                {
+                    "prod_fut_list_txt": "Дилеры ведущих производителей",
+                    "prod_fut_list_icon": 87
+                },
+                {
+                    "prod_fut_list_txt": "Участвуем в тендерах",
+                    "prod_fut_list_icon": 88
+                },
+                {
+                    "prod_fut_list_txt": "Очень доступная цена",
+                    "prod_fut_list_icon": 89
+                },
+                {
+                    "prod_fut_list_txt": "Расширенная гарантия",
+                    "prod_fut_list_icon": 90
+                },
+                {
+                    "prod_fut_list_txt": "Доставка за наш счет!",
+                    "prod_fut_list_icon": 91
+                }
+            ],
+            "prod_related_head": None,
+            "prod_related_prod": None,
+            "prod_serv_list1": None,
+            "prod_serv_list2": None
+        },
     }
     print(post)
 
     if id_img is not None:
 
         resource_post = requests.post(url, headers=header, json=post)
-        id_ = resource_post.json()['id']
+        print(resource_post.json())
+        # id_ = resource_post.json()['id']
 
-        return id_
+        # return id_
     else:
         return None
 
@@ -156,11 +224,3 @@ def del_media():
                 # del_media_request(id_)
 
 
-data = {'title': 'Расхождение и обгон запрещены!', 'img': 'img/Rashozhdenie_i_obgon_zaprescheny_2.jpg', 'price': '35000', 'description': 'Для обозначения участка судового хода, где обгон и расхождение судов запрещены.',
-        'link': 'http://www.navitel-spb.ru/katalog/znaki-vnutrennikh-vodnykh-putey/raskhozhdenie-i-obgon-zapreshcheny/', 'tag': 'Знаки', 'section': 'Транспортная безопасность', 'donor': 'http://www.navitel-spb.ru'}
-
-
-
-post = add_post(data['title'], data['img'], data['tag'], data['section'])
-
-print(post)

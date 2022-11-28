@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, MetaData, Table, Integer, String, \
-    Column, DateTime, ForeignKey, Numeric, CheckConstraint, select, Float, Text, insert
+    Column, DateTime, ForeignKey, Numeric, CheckConstraint, select, Float, Text, insert, JSON
 from datetime import datetime
 import os
 
@@ -14,7 +14,7 @@ items = Table('items', metadata,
     Column('title', String(200), nullable=True),
     Column('description', Text(), nullable=True),
     Column('price', Float(), nullable=True),
-    Column('img', String(200), nullable=True),
+    Column('img', JSON(), nullable=True),
     Column('tag', String(200), nullable=True),
     Column('section', String(200), nullable=True),
     Column('donor', String(200), nullable=True),
