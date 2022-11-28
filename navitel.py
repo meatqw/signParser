@@ -43,6 +43,8 @@ def parsing_all_items(url):
         content_list = content.find('div', {'class': 'catalog-section'})
         
         links = content_list.find_all('td', {'class': 'imgcell'})
+
+        num = 0
         for link in links:
             link = BASE_URL + link.find('a').get('href')
             data = parsing_item(link)
@@ -52,7 +54,11 @@ def parsing_all_items(url):
             data['section'] = 'Транспортная безопасность'
             data['donor'] = BASE_URL
             add_item(data)
-            add_post(data)
+            id_post = add_post(data)
+            print(id_post)
+            num += 1
+
+            print(url, num)
             
             
 url = ['http://www.navitel-spb.ru/katalog/znaki-vnutrennikh-vodnykh-putey/', 'http://www.navitel-spb.ru/katalog/navigatsionnye-znaki-dlya-rek/']

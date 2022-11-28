@@ -153,15 +153,15 @@ def add_post(data):
             "prod_serv_list2": None
         },
     }
-    print(post)
+    # print(post)
 
     if id_img is not None:
 
         resource_post = requests.post(url, headers=header, json=post)
-        print(resource_post.json())
-        # id_ = resource_post.json()['id']
+        # print(resource_post.json())
+        id_ = resource_post.json()['id']
 
-        # return id_
+        return id_
     else:
         return None
 
