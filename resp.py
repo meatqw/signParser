@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-
+headers = {"accept": "*/*",
+           "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36"}
 
 def get_content(url):
     try:
@@ -17,9 +18,6 @@ def get_content(url):
     except Exception as e:
         print(e)
         return False
-
-headers = {"accept": "*/*",
-           "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36"}
 
 
 def save(url, url_img, img_id, path):
