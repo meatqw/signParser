@@ -75,7 +75,25 @@ def add_post(data):
         except:
             id_img = None
     else:
-        id_img = None
+        gal_img = []
+        for num, img in enumerate(data['img']):
+            id_img = upload_media(img)
+            if num == 0:
+                featured_media = id_img
+            gal_img.append({'prod_first_gal_img': id_img})
+            if num == 2:
+                break
+
+    # fields
+    fields = []
+    if data['fields'] and len(data['fields']) > 0:
+        for field in data['fields']:
+            fields.append({
+                        "prod_first_list_head": field['name'],
+                        "prod_first_list_val": field['value']
+                        })
+    
+            
 
     # posting new post
     url = f"https://{config.DOMEN}/wp-json/wp/v2/posts"
@@ -89,28 +107,7 @@ def add_post(data):
         'featured_media': featured_media,
         "acf": {
             "prod_first_price": f"{data['price']}р.",
-            "prod_first_list": [
-                {
-                    "prod_first_list_head": "Производитель",
-                    "prod_first_list_val": "Значение"
-                },
-                {
-                    "prod_first_list_head": "Преимущество",
-                    "prod_first_list_val": "Значение"
-                },
-                {
-                    "prod_first_list_head": "Преимущество",
-                    "prod_first_list_val": "Значение"
-                },
-                {
-                    "prod_first_list_head": "Преимущество",
-                    "prod_first_list_val": "Значение"
-                },
-                {
-                    "prod_first_list_head": "Преимущество",
-                    "prod_first_list_val": "Значение"
-                }
-            ],
+            "prod_first_list": fields,
             "prod_first_gal": gal_img,
             "prod_fut_head": "Наши преимущества",
             "prod_fut_list": [

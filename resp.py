@@ -25,9 +25,13 @@ headers = {"accept": "*/*",
 def save(url, url_img, img_id, path):
     headers['referer'] = url
     req = requests.get(url_img, stream=True, headers=headers)
-    with open(f"{path}/{img_id}.jpg", 'wb') as fd:
-        for chunk in req.iter_content(4028):
-            fd.write(chunk)
-        fd.close()
-        
-    return f'{path}/{img_id}.jpg'
+    if req.status_code == 200:
+        with open(f"{path}/{img_id}.jpg", 'wb') as fd:
+            for chunk in req.iter_content(4028):
+                fd.write(chunk)
+            fd.close()
+            
+        return f'{path}/{img_id}.jpg'
+    else:
+         
+        return False
