@@ -61,7 +61,9 @@ def category_search(name):
 
 def add_post(data):
     """ADD POST PROCESSING"""
-    category = ["1", f'{category_search(data["section"])}']
+    
+    category = [f'{category_search(i)}' for i in data["section"]]
+    category.append("1")
 
     tag = [f'{tags_search(data["tag"])}']
 

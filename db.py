@@ -17,7 +17,7 @@ items = Table('items', metadata,
     Column('price', Float(), nullable=True),
     Column('img', JSON(), nullable=True),
     Column('tag', String(200), nullable=True),
-    Column('section', String(200), nullable=True),
+    Column('section', JSON(), nullable=True),
     Column('donor', String(200), nullable=True),
     Column('created_on', DateTime(), default=datetime.now)
 )
@@ -41,6 +41,6 @@ def add_item(data):
     conn.execute(ins)
     
     
-def get_item(link):
-    query = select([items]).where(items.c.link == link)
+def get_item(title):
+    query = select([items]).where(items.c.title == title)
     return engine.connect().execute(query).first()
