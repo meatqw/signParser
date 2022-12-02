@@ -1,7 +1,8 @@
-from db import add_item, get_item
+from db import add_item, get_item, get_all
 from resp import get_content, save
 from wp import add_post
 import re
+import time
 
 from transliterate import translit
 
@@ -47,7 +48,28 @@ def parsing_all_items(url_data):
     print(url_data['url'])
     content = get_content(url_data['url'])
     if content:
-        elements = content.find_all('div', {'class': 'element'})
+
+        if '#' not in url_data['url']:
+            elements = content.find_all('div', {'class': 'element'})
+        else:
+
+            id = url_data['url'].split('#')[-1]
+            all_div = content.find('div', {'class': 'viewpage exoR'}).find('div', recursive=False).find_all('div')
+
+            elements = []
+
+            status = False
+            for i in all_div:
+                if i.get('class'):
+                    if i.get('class')[0] == 'h2':
+                        if i.get('id') == id:
+                            status = True
+                    if i.get('class')[0] == 'h2':
+                        if i.get('id') != id:
+                            status = False
+                    if status:
+                        if i.get('class')[0] == 'element' or i.get('class')[0] == 'element calc_2':
+                            elements.append(i)
         
         if len(elements) > 0:
         
@@ -67,7 +89,7 @@ def parsing_all_items(url_data):
                     
                 title = title.strip()
                 if get_item(title) == None:
-                    # print(title)
+                    
                     description = info.find('div', {'class': 'desc exoL'}).text.translate(
                         str.maketrans('', '', ''.join(chars_for_delete)))
 
@@ -137,7 +159,7 @@ def parsing_all_items(url_data):
                     else:
                         fields = [{'name': 'Характеристики', 'value': field_text.strip()}]
                         
-
+                    print(f'New data: {title}')
                     data.append({'title': title, 'img': images, 'price': price,
                                 'description': description.strip(), 'fields': fields, "link": link})
                 else:
@@ -159,7 +181,7 @@ def parsing_all_items(url_data):
                             str.maketrans('', '', ''.join(chars_for_delete)))
                     
                     title = title.strip()
-                    print(title)
+                  
                     if get_item(title) == None:
                     
                         # Price
@@ -205,6 +227,8 @@ def parsing_all_items(url_data):
                         data.append({'title': title, 'img': images, 'price': price,
                                         'description': description.strip(), 'fields': fields, "link": link})
                         
+                        print(f'New data: {title}')
+                        
                     else:
                         print(f"{title} is already in the database")
                 
@@ -212,6 +236,7 @@ def parsing_all_items(url_data):
         
         
 urls = [
+    #Дорожное строительство
     {'url': 'https://plasto.ru/viewpage.php?page_id=401',
      'cat_name': 'Дорожные барьеры', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
     {'url': 'https://plasto.ru/viewpage.php?page_id=89',
@@ -236,15 +261,69 @@ urls = [
      'cat_name': 'Строительные ограждения', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
     {'url': 'https://plasto.ru/viewpage.php?page_id=297',
      'cat_name': 'Муляжи ДПС', 'tag': 'Опоры', 'section': ['Дорожная отрасль']}
+    #СТОЛБИКИ
+    {'url': 'https://plasto.ru/viewpage.php?page_id=106#stg',
+     'cat_name': 'Для газопроводов', 'tag': 'Опоры', 'section': ['Магистральные обозначения']},
+      {'url': 'https://plasto.ru/viewpage.php?page_id=106#stk',
+     'cat_name': 'Для кабельных линий', 'tag': 'Опоры', 'section': ['Магистральные обозначения']},
+      {'url': 'https://plasto.ru/viewpage.php?page_id=106#sto',
+     'cat_name': 'Спортивные, Оградительные вехи', 'tag': 'Опоры', 'section': ['Городская среда', 'Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=106#std',
+     'cat_name': 'Столбики  для ремонта дорог', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=106#sto',
+     'cat_name': 'Оградительные вехи', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
+    #ЗНАКИ
+     {'url': 'https://plasto.ru/viewpage.php?page_id=42#czn',
+     'cat_name': 'Дорожные знаки', 'tag': 'Знаки', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=232',
+     'cat_name': 'Знаки инд проектирования', 'tag': 'Знаки', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=326',
+     'cat_name': 'Основы знаков', 'tag': 'Знаки', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=470',
+     'cat_name': 'Маски знаков', 'tag': 'Знаки', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=67',
+     'cat_name': 'Светодиодные', 'tag': 'Знаки', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=208',
+     'cat_name': 'Прицепы', 'tag': 'Знаки', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=486',
+     'cat_name': 'Вертикальная разметка', 'tag': 'Знаки', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=109',
+     'cat_name': 'Стойки для дорожных знаков', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=214',
+     'cat_name': 'Раскладные опоры', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=489',
+     'cat_name': 'Консольные опоры', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=115',
+     'cat_name': 'Переносные опоры', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
+     {'url': 'https://plasto.ru/viewpage.php?page_id=167',
+     'cat_name': 'Фундаменты', 'tag': 'Опоры', 'section': ['Дорожная отрасль']},
     ]
 
-for url_data in urls:
-    datas = parsing_all_items(url_data)
-    for data in datas:
-        data['tag'] = url_data['tag']
-        data['section'] = url_data['section']
-        data['donor'] = BASE_URL
-        # print(data)
-        add_item(data)
-    
-    print(url_data['url'], url_data['cat_name'], f'Count: {len(datas)}')
+def add_items_in_base():
+    """UPLOAD ITEMS IN BASE"""
+    for url_data in urls:
+        datas = parsing_all_items(url_data)
+        for data in datas:
+            data['tag'] = url_data['tag']
+            data['section'] = url_data['section']
+            data['donor'] = BASE_URL
+            # print(data)
+            add_item(data)
+        
+        print(url_data['url'], url_data['cat_name'], f'Count: {len(datas)}')
+
+def add_items_in_site():
+    """UPLOAD ITEMS IN SITE"""
+    for i in get_all():
+        data = {'id': i[0], 'link': i[1], 'title': i[2], 'description': i[3],
+        'fields': i[4], 'price': int(i[5]), 'img': i[6], 'tag': i[7], 'section': i[8],
+        'donor': i[9]}
+
+        try:
+            id = add_post(data)
+            print(id)
+        except Exception as e:
+            print(e)
+            print(data)
+            time.sleep(30)
+        

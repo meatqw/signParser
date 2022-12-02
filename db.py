@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, MetaData, Table, Integer, String, \
-    Column, DateTime, ForeignKey, Numeric, CheckConstraint, select, Float, Text, insert, JSON
+    Column, DateTime, ForeignKey, Numeric, CheckConstraint, select, Float, Text, insert, JSON, update, delete
 from datetime import datetime
 import os
 
@@ -44,3 +44,15 @@ def add_item(data):
 def get_item(title):
     query = select([items]).where(items.c.title == title)
     return engine.connect().execute(query).first()
+
+def get_all():
+    query = select([items])
+    return engine.connect().execute(query).all()
+
+def delet():
+    query = select([items]).where(items.c.section == ['Магистральные'])
+    for i in engine.execute(query).all():
+        print(i[0])
+        q = items.delete().where(items.c.id == i[0])
+        engine.execute(q)
+        print(i[0])
