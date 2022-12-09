@@ -65,7 +65,7 @@ def add_post(data):
     category = [f'{category_search(i)}' for i in data["section"]]
     category.append("1")
 
-    tag = [f'{tags_search(data["tag"])}']
+    tag = [f'{tags_search(i)}' for i in data['tag']]
 
     # upload image on wp media
     # return id img
